@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 const Post = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [postData, setPostData] = useState([]);
+  let data = [];
 
   const getPostData = () => {
-    fetch("../data/postData.json", {
+    fetch("../data/fakeData.json", {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -18,20 +19,39 @@ const Post = () => {
         return response.json();
       })
       .then(function (myJson) {
-        setPostData(myJson);
-        setIsLoading(false);
-        console.log(myJson);
+        setIsLoading(() => false);
+        setPostData(() => myJson);
+        
+        // console.log(myJson, "this is data", postData);
       });
+
+      
   };
 
   useEffect(() => {
-    getPostData();
-  }, [id]);
+    if(isLoading) {
+      data = getPostData(); 
+    } else {
+      console.log("useeffect", postData);
+      console.log(id);
+    }
 
-  console.log(id);
+  }, [postData]);
+
+  let history = useHistory();
+
+  function handleClick() {
+    history.push("/");
+  }
+
+  
   // console.log(props);
 
-  return <>{!isLoading && <div>Post {id}</div>}</>;
+  return <>{!isLoading && 
+  <div>
+    <div>Post {id}</div>
+    <button  onClick={handleClick}>we are leaving</button>
+  </div>}</>;
 };
 
 export default Post;
